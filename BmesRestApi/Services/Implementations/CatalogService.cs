@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using BmesRestApi.Messages.Extensions;
@@ -55,13 +54,13 @@ namespace BmesRestApi.Services.Implementations
                                           product.Brand.Slug == fetchProductsRequest.BrandSlug);
                 }
 
+                var productCount = products.Count();
                 products = products
                     .Skip((fetchProductsRequest.PageNumber - 1) * fetchProductsRequest.ProductsPerPage)
                     .Take(fetchProductsRequest.ProductsPerPage)
                     .ToList();
 
                 var productDtos = products.MapToProductDtos();
-                var productCount = products.Count();
                 var totalPages = (int)Math.Ceiling((decimal)productCount / fetchProductsRequest.ProductsPerPage);
                 var pages = Enumerable.Range(1, totalPages).ToArray();
 
