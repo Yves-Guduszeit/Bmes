@@ -1,4 +1,5 @@
-﻿using BmesRestApi.Models.Products;
+﻿using BmesRestApi.Models.Carts;
+using BmesRestApi.Models.Products;
 using Microsoft.EntityFrameworkCore;
 
 namespace BmesRestApi.Databases
@@ -13,5 +14,7 @@ namespace BmesRestApi.Databases
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
     }
 }

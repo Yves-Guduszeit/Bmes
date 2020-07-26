@@ -5,6 +5,7 @@ using BmesRestApi.Services;
 using BmesRestApi.Services.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,11 +33,17 @@ namespace BmesRestApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Building Materials E-Store", Version = "v1" });
             });
 
+            services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
+            services.AddSession();
+
             services.AddDbContext<BmesDbContext>(options =>
                 options.UseSqlite(Configuration["Data:BmesRestApi:ConnectionString"]));
 
             ConfigureRepositories(services);
             ConfigureApplicationServices(services);
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +60,8 @@ namespace BmesRestApi
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Building Materials E-Store V1");
             });
 
+            app.UseSession();
+
             app.UseRouting();
 
             app.UseAuthorization();
@@ -68,6 +77,8 @@ namespace BmesRestApi
             services.AddTransient<IBrandRepository, BrandRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<ICartRepository, CartRepository>();
+            services.AddTransient<ICartItemRepository, CartItemRepository>();
         }
 
         private static void ConfigureApplicationServices(IServiceCollection services)
@@ -76,6 +87,7 @@ namespace BmesRestApi
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<ICatalogService, CatalogService>();
+            services.AddTransient<ICartService, CartService>();
         }
     }
 }
