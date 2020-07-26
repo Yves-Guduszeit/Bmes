@@ -1,10 +1,12 @@
 ﻿using BmesRestApi.Messages.Requests.Brands;
 using BmesRestApi.Messages.Responses.Brands;
 using BmesRestApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BmesRestApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BrandsController : ControllerBase
@@ -16,6 +18,7 @@ namespace BmesRestApi.Controllers
             _service = service;
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public ActionResult<GetBrandResponse> GetBrand(long id)
         {
@@ -24,6 +27,7 @@ namespace BmesRestApi.Controllers
             return response;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public ActionResult<FetchBrandsResponse> GetBrands()
         {
@@ -32,6 +36,7 @@ namespace BmesRestApi.Controllers
             return response;
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public ActionResult<CreateBrandResponse> PostBrand(CreateBrandRequest request)
         {
@@ -39,6 +44,7 @@ namespace BmesRestApi.Controllers
             return response;
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPut]
         public ActionResult<UpdateBrandResponse> PutBrand(UpdateBrandRequest request)
         {
@@ -46,6 +52,7 @@ namespace BmesRestApi.Controllers
             return response;
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult<DeleteBrandResponse> DeleteBrand(long id)
         {

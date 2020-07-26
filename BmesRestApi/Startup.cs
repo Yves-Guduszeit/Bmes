@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using BmesRestApi.Databases;
+using BmesRestApi.Infrastructure;
+using BmesRestApi.Models.Shared;
 using BmesRestApi.Repositories;
 using BmesRestApi.Repositories.Implementations;
 using BmesRestApi.Services;
@@ -6,6 +9,7 @@ using BmesRestApi.Services.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,14 +35,33 @@ namespace BmesRestApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Building Materials E-Store", Version = "v1" });
+                c.AddSecurityDefinition("Bearer",
+                    new OpenApiSecurityScheme
+                    {
+                        Description = "JWT Authorization header using the Bearer scheme.",
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "bearer"
+                    });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement{
+                    {
+                        new OpenApiSecurityScheme{
+                            Reference = new OpenApiReference{
+                                Id = "Bearer",
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        },
+                        new List<string>()
+                    }
+                });
             });
 
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
             services.AddSession();
 
-            services.AddDbContext<BmesDbContext>(options =>
-                options.UseSqlite(Configuration["Data:BmesRestApi:ConnectionString"]));
+            ConfigureDbContexts(services);
+
+            services.AddJwtAuth(Configuration);
 
             ConfigureRepositories(services);
             ConfigureApplicationServices(services);
@@ -65,11 +88,32 @@ namespace BmesRestApi
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            // Create a service scope to get an BmesIdentityDbContext instance using DI
+            using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            var dbContext = serviceScope.ServiceProvider.GetService<BmesIdentityDbContext>();
+            var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
+            var userManager = serviceScope.ServiceProvider.GetService<UserManager<User>>();
+            // Create the Db if it doesn't exist and applies any pending migration.
+            //dbContext.Database.Migrate();
+
+            IdentityDbSeeder.Seed(dbContext, roleManager, userManager);
+        }
+
+        private void ConfigureDbContexts(IServiceCollection services)
+        {
+            services.AddDbContext<BmesDbContext>(options =>
+                options.UseSqlite(Configuration["Data:BmesRestApi:ConnectionString"]));
+            services.AddDbContext<BmesIdentityDbContext>(options =>
+                options.UseSqlite(Configuration["Data:BmesIdentity:ConnectionString"]));
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<BmesIdentityDbContext>();
         }
 
         private static void ConfigureRepositories(IServiceCollection services)
@@ -84,6 +128,7 @@ namespace BmesRestApi
             services.AddTransient<IPersonRepository, PersonRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IOrderItemRepository, OrderItemRepository>();
+            services.AddTransient<IAuthRepository, AuthRepository>();
         }
 
         private static void ConfigureApplicationServices(IServiceCollection services)
@@ -95,6 +140,7 @@ namespace BmesRestApi
             services.AddTransient<ICartService, CartService>();
             services.AddTransient<IOrderService, OrderService>();
             services.AddTransient<ICheckoutService, CheckoutService>();
+            services.AddTransient<IAuthService, AuthService>();
         }
     }
 }

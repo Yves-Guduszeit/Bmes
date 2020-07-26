@@ -1,10 +1,12 @@
 ﻿using BmesRestApi.Messages.Requests.Categories;
 using BmesRestApi.Messages.Responses.Categories;
 using BmesRestApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BmesRestApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -16,6 +18,7 @@ namespace BmesRestApi.Controllers
             _service = service;
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public ActionResult<GetCategoryResponse> GetCategory(long id)
         {
@@ -24,6 +27,7 @@ namespace BmesRestApi.Controllers
             return response;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public ActionResult<FetchCategoriesResponse> GetCategories()
         {
@@ -32,6 +36,7 @@ namespace BmesRestApi.Controllers
             return response;
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public ActionResult<CreateCategoryResponse> PostCategory(CreateCategoryRequest request)
         {
@@ -39,6 +44,7 @@ namespace BmesRestApi.Controllers
             return response;
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPut]
         public ActionResult<UpdateCategoryResponse> PutCategory(UpdateCategoryRequest request)
         {
@@ -47,6 +53,7 @@ namespace BmesRestApi.Controllers
             return response;
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult<DeleteCategoryResponse> DeleteCategory(long id)
         {
