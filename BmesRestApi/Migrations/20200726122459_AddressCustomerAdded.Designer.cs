@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BmesRestApi.Migrations
 {
     [DbContext(typeof(BmesDbContext))]
-    [Migration("20200726114200_Address")]
-    partial class Address
+    [Migration("20200726122459_AddressCustomerAdded")]
+    partial class AddressCustomerAdded
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,9 @@ namespace BmesRestApi.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<long?>("CustomerId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
@@ -55,6 +58,8 @@ namespace BmesRestApi.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Addresses");
                 });
@@ -116,6 +121,31 @@ namespace BmesRestApi.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("CartItems");
+                });
+
+            modelBuilder.Entity("BmesRestApi.Models.Customers.Customer", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset>("ModifiedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("PersonId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("BmesRestApi.Models.Products.Brand", b =>
@@ -269,6 +299,54 @@ namespace BmesRestApi.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("BmesRestApi.Models.Shared.Person", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DateOfBirth")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MiddleName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("ModifiedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("People");
+                });
+
+            modelBuilder.Entity("BmesRestApi.Models.Addresses.Address", b =>
+                {
+                    b.HasOne("BmesRestApi.Models.Customers.Customer", null)
+                        .WithMany("Addresses")
+                        .HasForeignKey("CustomerId");
+                });
+
             modelBuilder.Entity("BmesRestApi.Models.Carts.CartItem", b =>
                 {
                     b.HasOne("BmesRestApi.Models.Carts.Cart", "Cart")
@@ -280,6 +358,15 @@ namespace BmesRestApi.Migrations
                     b.HasOne("BmesRestApi.Models.Products.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BmesRestApi.Models.Customers.Customer", b =>
+                {
+                    b.HasOne("BmesRestApi.Models.Shared.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

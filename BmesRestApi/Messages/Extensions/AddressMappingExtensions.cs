@@ -5,26 +5,6 @@ namespace BmesRestApi.Messages.Extensions
 {
     public static class AddressMappingExtensions
     {
-        public static AddressDto MapToAddressDto(this Address address)
-        {
-            var addressDto = new AddressDto
-            {
-                Id = address.Id,
-                Name = address.Name,
-                AddressLine1 = address.AddressLine1,
-                AddressLine2 = address.AddressLine2,
-                City = address.City,
-                Country = address.Country,
-                State = address.State,
-                ZipCode = address.ZipCode,
-                CreatedDate = address.CreatedDate,
-                ModifiedDate = address.ModifiedDate,
-                IsDeleted = address.IsDeleted
-            };
-
-            return addressDto;
-        }
-
         public static Address MapToAddress(this AddressDto addressDto)
         {
             var address = new Address
@@ -43,6 +23,26 @@ namespace BmesRestApi.Messages.Extensions
             };
 
             return address;
+        }
+
+        public static AddressDto MapToAddressDto(this Address address)
+        {
+            var addressDto = new AddressDto
+            {
+                Id = address.Id,
+                Name = address.Name,
+                AddressLine1 = address.AddressLine1,
+                AddressLine2 = address.AddressLine2,
+                City = address.City,
+                Country = address.Country,
+                State = address.State,
+                ZipCode = address.ZipCode,
+                CreatedDate = address.CreatedDate,
+                ModifiedDate = address.ModifiedDate,
+                IsDeleted = address.IsDeleted
+            };
+
+            return addressDto;
         }
     }
 }
