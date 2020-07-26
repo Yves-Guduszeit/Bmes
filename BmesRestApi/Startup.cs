@@ -79,6 +79,11 @@ namespace BmesRestApi
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<ICartRepository, CartRepository>();
             services.AddTransient<ICartItemRepository, CartItemRepository>();
+            services.AddTransient<IAddressRepository, AddressRepository>();
+            services.AddTransient<ICustomerRepository, CustomerRepository>();
+            services.AddTransient<IPersonRepository, PersonRepository>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddTransient<IOrderItemRepository, OrderItemRepository>();
         }
 
         private static void ConfigureApplicationServices(IServiceCollection services)
@@ -88,6 +93,8 @@ namespace BmesRestApi
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<ICatalogService, CatalogService>();
             services.AddTransient<ICartService, CartService>();
+            services.AddTransient<IOrderService, OrderService>();
+            services.AddTransient<ICheckoutService, CheckoutService>();
         }
     }
 }

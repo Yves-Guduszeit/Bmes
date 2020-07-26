@@ -1,6 +1,7 @@
 ﻿using BmesRestApi.Models.Addresses;
 using BmesRestApi.Models.Carts;
 using BmesRestApi.Models.Customers;
+using BmesRestApi.Models.Orders;
 using BmesRestApi.Models.Products;
 using BmesRestApi.Models.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -22,5 +23,7 @@ namespace BmesRestApi.Databases
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Person> People { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
     }
 }
